@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>CS 498 Data Visualization - World Happiness Index</title>
+        <meta name="final project" content="Data Visualization">
+        <link rel="stylesheet" href="main.css">
+		<script src="http://d3js.org/d3.v3.min.js"></script>
+        <style>
+		
+		/* Style the background */
+				body{
+			background opacity: 0.3;	
+			background: url('backgroundnew.jpg') no-repeat center center fixed ;
+			
+			  -webkit-background-size: cover;
+			  -moz-background-size: cover;
+			  -o-background-size: cover;
+			  background-size: cover;
+			}					
+
+          /* Style the tab */
+                    .tab {
+          overflow: hidden;
+          border: 1px solid #ccc;
+          background-color: #555;
+			}
+          /* Style the buttons inside the tab */
+          .tab button {
+              background-color: inherit;
+              color: white;
+              float: left;
+              border: none;
+              outline: none;
+              cursor: pointer;
+              padding: 10px 37px;
+              transition: 0.3s;
+              font-size: 17px;
+            }
+            
+          /* Change background color of buttons on hover */
+         .tab button:hover {
+                      background-color: #ddd;
+                    }
+
+
+          /* Create an active/current tablink class */
+          .tab button.active {
+            background-color: #ccc;
+			}
+			
+			.tabcontent {
+		           display: none;
+                   padding: 6px 12px;
+                   -webkit-animation: fadeEffect 0.9s;
+                    animation: fadeEffect 0.9s; 
+                    }
+			/* Fade in tabs */
+                   @-webkit-keyframes fadeEffect {
+                    from {opacity: 0;}
+                      to {opacity: 1;}
+                    }
+
+			/* Go from zero to full opacity */
+                    @keyframes fadeEffect {
+                         from {opacity: 0;}
+                         to {opacity: 1;}
+                } 
+
+			.axis text {
+			  font: 10px sans-serif;
+			}
+
+			.axis path,
+			.axis line {
+			  fill: none;
+			  stroke: #000;
+			  shape-rendering: crispEdges;
+			  
+			}
+			
+			
+			td { 
+				line-height: 1.5; 
+			}
+			
+			#scatter_categories {
+            margin-top: 100px;
+            margin-right: 160px;
+			float: right;
+			margin: right;
+            width: 190px;
+            font-family: Arial;
+            font-size: 10px;
+			}
+			
+			
+			span.p {
+			display: inline; /* the default for span */
+			border-radius: 10px;
+			background-color: DarkKhaki;			
+            line-height: 180%;			
+			}
+			
+			span.q {
+			display: inline; /* the default for span */
+			border-radius: 10px;
+			background-color: Coral; 					
+            line-height: 180%;			
+			}
+			
+			span.r {
+			display: inline; /* the default for span */			
+			border-radius: 10px;
+			background-color: FireBrick; 								
+            line-height: 180%;		
+			}
+			
+			span.s {
+			display: inline; /* the default for span */
+			border-radius: 10px;
+			background-color: PeachPuff;					
+            line-height: 180%;					
+			}
+			
+			span.t {
+			display: inline; /* the default for span */
+			border-radius: 10px;
+			background-color: Olive; 								
+            line-height: 180%;		
+			}
+			
+			span.u {
+			display: inline; /* the default for span */
+			border-radius: 10px;
+			background-color: Gold; 								
+            line-height: 180%;		
+			}
+			
+			span.v {
+			display: inline; /* the default for span */
+			border-radius: 5px;
+			background-color: SteelBlue; 								
+            line-height: 180%;		
+			}
+			
+
+			
+			#region_select {
+            margin-top: -400px;
+            margin-right: 160px;
+			float: right;
+			margin: right;
+            width: 190px;
+            font-family: Arial;
+            font-size: 10px;
+			}
+			
+			span.a {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: DarkKhaki; 
+			}
+			
+			span.b {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: Coral; 
+			}
+			
+			span.c {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: FireBrick; 
+			}
+			
+			span.d {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: PeachPuff; 
+			}
+			
+			span.e {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: Olive; 
+			}
+			
+			span.f {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: Gold; 
+			}
+			
+			span.g {
+			display: inline; /* the default for span */
+			width: 30px;
+			height: 50px; 
+			background-color: SteelBlue,; 
+			}
+			
+			.dot {
+			stroke: #000;
+			
+			.axis path,
+			.axis line {
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
+			}
+			
+
+		  
+        </style>
+    </head>
+    <body>
+
+        <h1>World Happiness Index</h1>
+        <h2></h2>
+
+        <!-- Tab links -->
+        <div class="tab">
+          <button class="tablinks" onclick="openHome(event, 'Home')" id="defaultOpen">Home</button>
+          <button class="tablinks" onclick="openHappiness(event, 'Happiness')">Happiness Index</button>
+          <button class="tablinks" onclick="openCategories(event, 'Categories')">Categories</button>
+          <button class="tablinks" onclick="openAbout(event, 'About')">About</button>
+        </div>
+
+        <!-- Tab content -->
+        <div id="Home" class="tabcontent">		
+        <img src="side.png" style="float:left;width:300px;height:450px;"/>
+        <div>
+            <div style="padding : 0px 0px 0px 400px;">
+                <p> There are a number of surveys carried out every year to find out the state of global happiness in the world.
+				Based on those data reports studies are performed to find out the reason for happiness. </p>
+            			 
+				<p> The aim of this visualization is to find out the different external factors affecting the Happiness Index of any particular country.    
+                    <b>Why some countries tend to be happier overall then others?</b>
+				  
+                    <p>All the readily available dataset in public co-relates happiness with more obvious factors like:</p>
+					<ul> 
+					 <li> Economy (GDP per Capita) </li>
+					 <li>Health (Life Expectancy) </li>
+					 <li>Freedom</li>
+					 <li>Trust (Government Corruption)</li>
+					</ul> 
+				<p>The aim here is to highlight other external factors that might also impact the happiness level. 
+					 This visualization tries to find a pattern between World Happiness Index with the following factors that might affect 
+					 the overall Happiness of a particular Country: 
+                    <ul>
+                        
+                        <li> <b>Yearly Average Temperature of that country</li>
+                        <li> Per Capita Alcohol consumption of that country</b></li>
+                    </ul>						
+                </p>   
+                
+                <p>
+                  The data can be visualized using different plots namely barcharts and scatter plots.
+				</p>
+				
+			    <p> <i>***The trend of the happiness is based on the data collected in the year 2015.</i></p>		
+			</div>
+        </div>
+    </div>
+
+                <div id="Happiness" class="tabcontent">
+          <h3>Happiness Index of top 30 countries by Region</h3>
+		  <style="font-size: 14px;font-family: Arial; width: 350px;float: right;margin-right: 25px;margin-top:-40px;">
+		  
+			<p>By default the bar-chart shows the top 30 countries on the x-axis for all the regions.
+			Every bar color represents a particular region and the legend describes it. 
+			<br>The y-axis depicts the overall happiness score. 
+			The range for the happiness score has been fixed to evenly distribute the data</p>
+            <p>User interaction is enabled by checking/un-checking the selections. It consequently triggers the bar-chart updates. 
+            </p>
+			<p>A tooltip appears on hovering over a bar and the color of the bar gets darker which displays the following:
+			<ul>
+			<li>Happiness Ranking</li>
+			<li>Happiness Score</li>
+			<li> Region</li>
+			</ul>
+			</p>
+			<p> It can be clearly visualized that: </p>
+			<ul>
+			   <li><b> European countries are the happiest in the world</b></li>
+			   <li><b> None of the African countries feature in the top 30 list</b></li>
+			   <li><b> Singapore is the only country from the region Asia which made it to the top 30 list</b></li>
+			</ul>
+			
+          <!-- svg id="RankingChart" width="1100" height="600"></svg -->
+		  <svg class="rankingChart"></svg>
+		  <fieldset id ="region_select">
+            <legend><b><font size = '2'>Region Filters</font></b></legend>
+            <input  type="checkbox" name="Africa" value="Africa" class="rg_filter" checked ="checked" onchange="data_filter()">Africa &nbsp 	<span class = "g" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+            <input  type="checkbox" name="Asia" value="Asia" class="rg_filter" checked ="checked" onchange="data_filter()">Asia &nbsp 	<span class = "a" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+			<input  type="checkbox" name="Aus" value="Australia and New Zealand" class="rg_filter" checked ="checked" onchange="data_filter()">Australia and New Zealand &nbsp 	<span class = "b" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+			<input  type="checkbox" name="Europe" value="Europe" class="rg_filter" checked ="checked" onchange="data_filter()">Europe &nbsp 	<span class = "c" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+			<input  type="checkbox" name="SA" value="Latin America and Caribbean" class="rg_filter" checked ="checked" onchange="data_filter()">Latin America and Caribbean &nbsp 	<span class = "d" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+			<input  type="checkbox" name="ME" value="Middle East" class="rg_filter" checked ="checked" onchange="data_filter()">Middle East &nbsp 	<span class = "e" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+			<input  type="checkbox" name="NA" value="North America" class="rg_filter" checked ="checked" onchange="data_filter()">North America  &nbsp 	<span class = "f" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+        </fieldset>
+		   <p style="float: left;margin-right: 25px;"><i>***The color-coding for the region has been described on the legend</i></p>
+        </div>
+
+         <div id="Categories" class="tabcontent">
+          <h3>External Factors Affecting Happiness</h3>	
+		  <p>Both the external factors affecting the happiness of different countries across the world highlights a definitive trend. The vizualization helps in bringing out the conclusions:
+		  <ul>
+			<li>We see a trend of more alcohol consumptions in the countries which tends to be more happy.</li>
+			<li>Similarly, we observe that the countries with lower avg. annual temperature tends to be more happy. With the increasing scale of the temperature, the happiness level takes a dip.</li>
+			</ul></p>
+			
+			<p>Hover over the countries to get more information about their standings!</p>
+		<svg class="categoryChart"></svg>
+		<fieldset id ="scatter_categories">
+		   <legend><b><font size = '2'>Region </font></b></legend>
+		   <label for="Africa"> Africa &nbsp 	<span class = "v" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+		   <label for="Asia"> Asia &nbsp	<span class = "p" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+		   <label for="Aus"> Australia and New Zealand &nbsp 	<span class = "q" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>		   
+		   <label for="Europe"> Europe &nbsp 	<span class = "r" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>		   
+		   <label for="SA"> Latin America and Caribbean &nbsp 	<span class = "s" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+		   <label for="ME"> Middle East &nbsp 	<span class = "t" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>		   
+		   <label for="NA"> North America &nbsp 	<span class = "u" >&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp</span><br/>
+        </fieldset>
+
+		  
+        </div>
+
+<div id="About" class="tabcontent">
+		
+		
+		<img src="wine.jpg" style="float:right;width:475px;height:200px;"/>
+		  
+		  <h3><b>About the Visualization</b></h3>  
+		  <p>This visualization helps in drawing the following high-level <u>conclusions</u>: 
+            <ul>
+		     <li> <b>We see a trend of more alcohol consumptions in the countries which tend to be more happy. </li>
+             <li> We can infer that the countries with lower average annual temperature tend to be more happy.</b> </li>
+          </p>
+          <p>This project follows the Martini Glass hybrid structure where the I have provided both message focused and query focused visualization. The 'Categories' tab shows scatter-plots highlighting trends whereas the 'Happiness Index' tab gives the user the interactivty to filter on the data to focus on specific dataset.</p>
+          <h3><b><u>Scenes: </u></b></h3>
+          <p>There are four tabs on the page which are self-explanatory.The <b>Home</b> page provides a brief overview on the topic, 
+		  the interactive <b>Happiness Index</b> tab describes the happiness index of the top 30 countries based on the 2015 survey results,
+		  the <b>Categories</b> tab displays the scatterplots relating Happiness with the temperature of that country and with the country's per capita alcohol consumption.
+		  and finally the <b>About</b> tab provides the conclusion of the survey results and establishes a trend for the happiness index 
+		  and how external factors influences it.<br> While the bar-chart shows the result for a filtered data set to top 30 countries, the catogories affecting happiness uses the complete dataset of all the countries.
+		  The content has been developed using the d3 library of javascript as well as using html and css. 
+		  The data visualization components in this content are bar-chart and scatter-plots which have been created using D3.js  
+			</p>
+          <h3><b><u>Annotations: </u></b></h3>
+          <p>All the screens contain a textual overview for helping the user for easy navigation.The data visualization content has been made 
+		  interactive by providing user-friendly check-boxes.
+		  The bar chart displays tooltips which appears on hovering over 
+		  the bars. Legends have been incorporated for easy understanding of the visual representations. Annotations highlighting the trends have been shown in the Categories section.
+          </p>
+          <h3><b><u>Parameters: </u></b></h3>
+          <p>Following parameters have been used in the visualization.<br />
+            <li>Happiness index of the top 30 countries based on different regions</li>
+            <li>Relative standings of all the countries with respect to external factors</li>
+        
+          </p>
+          <h3><b><u>Triggers: </u></b></h3>
+          <p>Navigation between tabs and user-interaction has been incorporated by making use of Triggers.
+		  The <b>Happiness Index</b> tab provides the capability for user-interaction by enabling the selection of the regions and also provides tooltips functionality on hovering-over.
+		  The <b>Categories</b> tab provides tooltips functionality on hovering-over and also darken the selected country for more user readability.
+	
+			</p>
+          <h3>Author</h3>
+          <p>The project is created by <a href="http://linkedin.com/in/sumantomukherjee" target="_blank"> Sumanto Mukherjee </a> as part of the Data Visualization course for MCS-DS program</a> ...</p>
+          <svg id="description" width="1100" height="600"></svg>
+		    
+        </div>
+
+        <script>
+
+        function openHome(evt, tabName) {
+
+            var i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+			
+			
+
+			}
+			
+		document.getElementById("defaultOpen").click();
+
+		function openHappiness(evt, tabName) {
+
+			var i, tabcontent, tablinks;
+
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+			  tabcontent[i].style.display = "none";
+			}
+
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+			  tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+
+			document.getElementById(tabName).style.display = "block";
+			evt.currentTarget.className += " active";
+		  
+
+			master_data = []
+			d3.tsv("Combined_Data.tsv", function(error, data) {
+			  if (error) throw error;
+			  master_data = data;
+			  data_filter();
+			});
+			
+			}
+			
+			function data_filter(){
+			
+			var checkedRegion = get_selection();
+			
+			var filteredData = master_data.filter(function(d){return checkedRegion.indexOf(d.Region) > -1});
+			
+			d3.select(".rankingChart").html('');
+			
+			var margin = {top: 20, right: 50, bottom: 60, left: 60},
+				width = 900 - margin.left - margin.right,
+				height = 400 - margin.top - margin.bottom;
+			var x = d3.scale.ordinal()
+				.rangeRoundBands([0, width], .1);
+
+			var y = d3.scale.linear()
+				.range([height, 0]);
+
+			var xAxis = d3.svg.axis()
+				.scale(x)
+				.orient("bottom");
+
+			var yAxis = d3.svg.axis()
+				.scale(y)
+				.orient("left");
+
+			var rankingChart = d3.select(".rankingChart")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			
+			  x.domain(filteredData.map(function(d) { return d.Country; }));
+			  y.domain([6.4, d3.max(filteredData, function(d) { return d.H_Score; })]);
+
+			  rankingChart.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(xAxis)
+				  .selectAll("text")
+				  .attr("y", 0)
+				  .attr("x", 7)
+				  .attr("dy", ".55em")
+				  .attr("transform", "rotate(60)")
+				  .style("text-anchor", "start");
+
+			  rankingChart.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				  .append("text")
+				  .style("text-anchor", "middle")
+				  .attr("transform", "translate("+ (0 - margin.left/1.8) +","+(height/2)+")rotate(-90)")
+				  .style("font-size", "16px") 
+				  .text("Overall Happiness Score");
+
+				  
+
+			  rankingChart.selectAll(".bar")
+				  .data(filteredData)
+				  .enter().append("rect")
+				  .attr("class", "bar")
+				  .attr("x", function(d) { return x(d.Country); })
+				  .attr("y", function(d) { return y(d.H_Score); })
+				  .attr("fill", function(d){return colorPicker(d.Region);})
+				  .on("mouseover", function(d){
+                            d3.select(this).style("fill", function() {
+                                return d3.rgb(d3.select(this).style("fill")).darker(0.7);
+                            });
+                        })
+				  .on("mouseout", function(d){
+                            d3.select(this).style("fill", function() {
+                                return d3.rgb(d3.select(this).style("fill")).brighter(0.7);
+                            });
+                        })
+				  .transition()
+				  .duration(1500)
+				  .attr("height", function(d) { return height - y(d.H_Score); })
+				  .attr("width", x.rangeBand())
+				  .append("rankingChart:title")
+				  .text(function(d) { return "Happiness Ranking: " + d.H_Rank + "\n" + "Happiness Score: " + d.H_Score + "\n" + "Region: " + d.Region; });
+				  
+			
+			}
+			
+			function colorPicker(v){
+				if (v == "Asia") {
+				return "DarkKhaki";
+				} else if (v == "Europe") {
+				return "FireBrick";
+				} else if (v == "Australia and New Zealand") {
+				return "Coral";
+				} else if (v == "Africa") {
+				return "SteelBlue";
+				} else if (v == "Latin America and Caribbean") {
+				return "PeachPuff";
+				} else if (v == "Middle East") {
+				return "Olive";
+				} else if (v == "North America") {
+				return "Gold";
+				}
+			}
+		
+			function get_selection(){
+				var selected = [];
+				var status_dd = document.getElementsByClassName('rg_filter');
+				for (var index = 0; index < status_dd.length; index++) {
+					if(status_dd[index].checked){
+						selected.push(status_dd[index].value);
+                }
+            }
+            return selected;
+        }
+
+		
+        function openCategories(evt, tabName) {
+
+            var i, tabcontent, tablinks;
+
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+
+			document.getElementById(tabName).style.display = "block";
+			evt.currentTarget.className += " active";
+
+			a_data = []
+			t_data = []
+			d3.tsv("Combined_Data_All.tsv", function(error, data) {
+			if (error) throw error;
+			
+			a_data = data;
+			t_data = data;
+			categoryAlcohol();
+			categoryTemp();
+			
+				});
+				
+			function categoryAlcohol(){
+				
+			var margin = {top: 20, right: 50, bottom: 60, left: 60},
+			width = 900 - margin.left - margin.right,
+			height = 800 - margin.top - margin.bottom;
+				
+			var x = d3.scale.linear()
+				.range([0, width]);
+
+			var y = d3.scale.linear()
+				.range([(height/2), 0]);
+
+			var xAxis = d3.svg.axis()
+				.scale(x)
+				.orient("bottom");
+
+			var yAxis = d3.svg.axis()
+				.scale(y)
+				.orient("left");
+				
+			 a_data.forEach(function(d) {
+				d.Alcohol_Consumption = +d.Alcohol_Consumption;
+				d.H_Score = +d.H_Score;
+			  });
+
+				
+			// add the graph canvas to the body of the webpage
+			var category = d3.select(".categoryChart")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", (height/2) + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			
+				y.domain([d3.min(a_data, function(d) { return d.H_Score; })-1, d3.max(a_data, function(d) { return d.H_Score; })+1]);
+				x.domain([d3.min(a_data, function(d) { return d.Alcohol_Consumption; })-1, d3.max(a_data, function(d) { return d.Alcohol_Consumption; })+3]);
+				
+				
+				category.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + (height/2) + ")")
+				  .call(xAxis)
+				  .append("text")
+				  .attr("x", (width/2))
+				  .attr("y", 40)
+				  .style("text-anchor", "middle")
+				  .style("font-size", "16px") 
+				  .text("Alcohol Consumption per Capita");
+
+			    category.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				  .append("text")
+				  .style("text-anchor", "middle")
+				  .attr("transform", "translate("+ (0 - margin.left/1.8) +","+(height/4)+")rotate(-90)")
+				  .style("font-size", "16px") 
+				  .text("Overall Happiness Score");
+				
+				
+			  category.selectAll(".circle")
+				  .data(a_data)
+				  .enter().append("circle")
+				  .attr("class", "dot")
+				  .attr("r", 6)
+				  .attr("cx", function(d){ return x(d.Alcohol_Consumption); })
+				  .attr("cy", function(d){ return y(d.H_Score); })
+				  .attr("fill", function(d){return colorPicker(d.Region);})
+				  .on("mouseover", function(d){
+                            d3.select(this).style("fill", function() {
+                                return d3.rgb(d3.select(this).style("fill")).darker(0.7);
+                            });
+                        })
+				  .on("mouseout", function(d){
+                            d3.select(this).style("fill", function() {
+                                return d3.rgb(d3.select(this).style("fill")).brighter(0.7);
+                            });
+                        })
+				  .append("categoryChart:title")
+				  .text(function(d) { return "Happiness Ranking: " + d.H_Rank + "\n" + "Happiness Score: " + d.H_Score + "\n" + "Acohol intake per Capita: " + d.Alcohol_Consumption + "\n" + "Region: " + d.Region + "\n" + "Country: " + d.Country; });
+				
+				
+				}
+				
+			function categoryTemp(){
+				
+				var margin = {top: 20, right: 50, bottom: 60, left: 60},
+				width = 700 - margin.left - margin.right,
+				height = 900 - margin.top - margin.bottom;
+					
+				var x = d3.scale.linear()
+					.range([0, width]);
+
+				var y = d3.scale.linear()
+					.range([height, 500]);
+
+				var xAxis = d3.svg.axis()
+					.scale(x)
+					.orient("bottom");
+
+				var yAxis = d3.svg.axis()
+					.scale(y)
+					.orient("left");
+					
+				 t_data.forEach(function(d) {
+					d.Annual_temp = +d.Annual_temp;
+					d.H_Score = +d.H_Score;
+				  });
+
+					
+				// add the graph canvas to the body of the webpage
+				var category = d3.select(".categoryChart")
+					.attr("width", width + margin.left + margin.right)
+					.attr("height", height + margin.top + margin.bottom)
+				  .append("g")
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				
+					y.domain([d3.min(t_data, function(d) { return d.H_Score; })-1, d3.max(t_data, function(d) { return d.H_Score; })+1]);
+					x.domain([d3.min(t_data, function(d) { return d.Annual_temp; })-1, d3.max(t_data, function(d) { return d.Annual_temp; })+5]);
+					
+					
+					category.append("g")
+					  .attr("class", "x axis")
+					  .attr("transform", "translate(0," + height + ")")
+					  .call(xAxis)
+					  .append("text")
+					  .attr("x", (width/2))
+					  .attr("y", 40)
+					  .style("text-anchor", "middle")
+					  .style("font-size", "16px") 
+					  .text("Annual Average Temperature");
+
+					category.append("g")
+					  .attr("class", "y axis")
+					  .call(yAxis)
+					  .append("text")
+					  .style("text-anchor", "middle")
+					  .attr("transform", "translate("+ (0 - margin.left/1.8) +","+(3*(height/4))+")rotate(-90)")
+					  .style("font-size", "16px") 
+					  .text("Overall Happiness Score");
+					
+					
+				  category.selectAll(".circle")
+					  .data(t_data)
+					  .enter().append("circle")
+					  .attr("class", "dot")
+					  .attr("r", 6)
+					  .attr("cx", function(d){ return x(d.Annual_temp); })
+					  .attr("cy", function(d){ return y(d.H_Score); })
+					  .attr("fill", function(d){return colorPicker(d.Region);})
+					  .on("mouseover", function(d){
+                            d3.select(this).style("fill", function() {
+                                return d3.rgb(d3.select(this).style("fill")).darker(0.7);
+                            });
+                        })
+				  .on("mouseout", function(d){
+                            d3.select(this).style("fill", function() {
+                                return d3.rgb(d3.select(this).style("fill")).brighter(0.7);
+                            });
+                        })
+					  .append("categoryChart:title")
+					  .text(function(d) { return "Happiness Ranking: " + d.H_Rank + "\n" + "Happiness Score: " + d.H_Score + "\n" + "Avg. Annual Temp: " + d.Annual_temp + "\n" + "Region: " + d.Region + "\n" + "Country: " + d.Country; });
+					
+					
+				}
+
+            }
+
+		function openAbout(evt, tabName) {
+
+                  var i, tabcontent, tablinks;
+
+                  tabcontent = document.getElementsByClassName("tabcontent");
+                  for (i = 0; i < tabcontent.length; i++) {
+                      tabcontent[i].style.display = "none";
+                  }
+
+                  tablinks = document.getElementsByClassName("tablinks");
+                  for (i = 0; i < tablinks.length; i++) {
+                      tablinks[i].className = tablinks[i].className.replace(" active", "");
+                  }
+
+                  document.getElementById(tabName).style.display = "block";
+                  evt.currentTarget.className += " active";
+
+                }
+
+</script>
+
+</body>
+</html>
