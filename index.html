@@ -423,7 +423,7 @@
 		  
 
 			master_data = []
-			d3.tsv("Combined_Data.tsv", function(error, data) {
+			d3.tsv("/Combined_Data.tsv", function(error, data) {
 			  if (error) throw error;
 			  master_data = data;
 			  data_filter();
@@ -563,7 +563,7 @@
 
 			a_data = []
 			t_data = []
-			d3.tsv("Combined_Data_All.tsv", function(error, data) {
+			d3.tsv("/Combined_Data_All.tsv", function(error, data) {
 			if (error) throw error;
 			
 			a_data = data;
